@@ -28,7 +28,7 @@ func main() {
 	app := fiber.New()
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello World!")
+		return c.SendString("Qixalite Hatch v1.0.0")
 	})
 
 	app.Get("/files/logs", AuthPassword(password, PresentFiles("./tf/logs", "")))
