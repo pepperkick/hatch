@@ -11,6 +11,8 @@ import (
 	"strings"
 )
 
+var version = "1.1.0"
+
 type WebFile struct {
 	Name       string `json:"name"`
 	URL        string `json:"url"`
@@ -25,16 +27,33 @@ func main() {
 	flag.StringVar(&password, "password", "", "Password that needs to passed as query to allow connections.")
 	flag.Parse()
 
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		BodyLimit: 1024 * 1024 * 512,
+	})
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Qixalite Hatch v1.0.0")
+		return c.SendString(fmt.Sprintf("Qixalite Hatch %s", version))
 	})
 
 	app.Get("/files/logs", AuthPassword(password, PresentFiles("./tf/logs", "")))
 	app.Get("/files/logs/*", AuthPassword(password, ServePathFile("./tf/logs")))
 	app.Get("/files/demos", AuthPassword(password, PresentFiles("./tf", ".dem")))
 	app.Get("/files/demos/*", AuthPassword(password, ServePathFile("./tf")))
+	app.Get("/maps", AuthPassword(password, PresentFiles("./tf/maps", "")))
+	app.Get("/maps/*", AuthPassword(password, ServePathFile("./tf/maps")))
+	app.Post("/maps", AuthPassword(password, func(ctx *fiber.Ctx) error {
+		file, err := ctx.FormFile("map")
+
+		if err != nil {
+			return err
+		}
+
+		if ctx.SaveFile(file, fmt.Sprintf("./tf/maps/%s", file.Filename)) != nil {
+			return ctx.SendStatus(500)
+		}
+
+		return ctx.SendStatus(201)
+	}))
 
 	err := app.Listen(address)
 	if err != nil {
