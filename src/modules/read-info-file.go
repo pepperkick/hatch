@@ -13,9 +13,14 @@ import (
 var infoFile = "./tf/server.info"
 
 func ReadServerInfo() {
+	if _, err := os.Stat(infoFile); err != nil {
+		fmt.Println("Server info file not found, skipping check")
+		return
+	}
+
 	file, err := os.Open(infoFile)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 		return
 	}
 	defer file.Close()
@@ -29,14 +34,20 @@ func ReadServerInfo() {
 		fmt.Println("[SERVER INFO]", text)
 
 		switch parts[0] {
+		case "server_ip":
+			serverStatus.IP = parts[1]
+			break
+		case "server_port":
+			serverStatus.Port = parts[1]
+			break
 		case "password":
-			status.Password = parts[1]
+			serverStatus.Password = parts[1]
 			break
 		case "rcon_password":
-			status.RconPassword = parts[1]
+			serverStatus.RconPassword = parts[1]
 			break
 		case "tv_password":
-			status.TvPassword = parts[1]
+			serverStatus.TvPassword = parts[1]
 			break
 		case "connected_player":
 			re := regexp.MustCompile("connected_player: (.*?) (.*?) \"(.*?)\" (.*)")

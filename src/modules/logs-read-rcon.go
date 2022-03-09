@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"github.com/qixalite/hatch/modules/services"
 	"github.com/tjgq/broadcast"
+	timeUtils "time"
 )
 
 type RconCommandLog struct {
-	Origin       string `json:"origin"`
-	Command      string `json:"command"`
-	LighthouseID string `json:"lighthouseId"`
+	CreatedAt    timeUtils.Time `json:"createdAt"`
+	Origin       string         `json:"origin"`
+	Command      string         `json:"command"`
+	LighthouseID string         `json:"lighthouseId"`
 }
 
 func ReadRconFromLogs(broadcast *broadcast.Broadcaster, lighthouseId string, elasticIndex string) {
@@ -44,6 +46,7 @@ func readRconLog(arr []string, lighthouseId string, elasticIndex string) {
 
 	// Covert msg line data to struct to pass in request later
 	msg := RconCommandLog{
+		CreatedAt:    timeUtils.Now(),
 		Origin:       origin,
 		Command:      command,
 		LighthouseID: lighthouseId,

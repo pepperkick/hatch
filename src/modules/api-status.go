@@ -6,6 +6,8 @@ import (
 )
 
 type ServerStatus struct {
+	IP           string         `json:"serverIp"`
+	Port         string         `json:"serverPort"`
 	Password     string         `json:"password"`
 	RconPassword string         `json:"rconPassword"`
 	TvPassword   string         `json:"TvPassword"`
@@ -14,20 +16,20 @@ type ServerStatus struct {
 	Matches      []MatchStatus  `json:"matches"`
 }
 
-var status ServerStatus
+var serverStatus ServerStatus
 
 func SetupStatusAPI(app *fiber.App, password string, lighthouseId string) {
-	status.LighthouseID = lighthouseId
-	status.Matches = []MatchStatus{}
-	status.Players = []PlayerStatus{}
+	serverStatus.LighthouseID = lighthouseId
+	serverStatus.Matches = []MatchStatus{}
+	serverStatus.Players = []PlayerStatus{}
 
 	app.Get("/status", authPassword(password, func(c *fiber.Ctx) error {
 		ReadServerInfo()
 
-		status.Matches = matches
-		status.Players = activePlayers
+		serverStatus.Matches = matches
+		serverStatus.Players = activePlayers
 
-		return c.JSON(status)
+		return c.JSON(serverStatus)
 	}))
 
 	fmt.Println("[HATCH MODULE] Started StatusAPI Module")

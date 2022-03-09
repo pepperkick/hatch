@@ -58,5 +58,5 @@ func IndexMessageInElasticSearch(index string, message []byte) {
 	}
 
 	// Print the response status and indexed document version.
-	log.Printf("[%s] %s; version=%d", res.Status(), r["result"], int(r["_version"].(float64)))
+	log.Printf("[%s - %s] %s; version=%d", index, res.Status(), r["result"], int(r["_version"].(float64)))
 }

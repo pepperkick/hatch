@@ -25,6 +25,14 @@ func ReadPlayerStatusFromLogs(broadcast *broadcast.Broadcaster) {
 	disconnectName := "PlayerDisconnected"
 	AddLogMatcher(disconnectRegex, disconnectName)
 
+	enteredGameRegex := "L (.*?) - (.*?): \"(.*?)<(.*?)><(.*?)><>\" entered the game"
+	enteredGameName := "PlayerEnteredGame"
+	AddLogMatcher(enteredGameRegex, enteredGameName)
+
+	steamVerifiedRegex := "L (.*?) - (.*?): \"(.*?)<(.*?)><(.*?)><>\" STEAM USERID validated"
+	steamVerifiedName := "PlayerSteamVerified"
+	AddLogMatcher(steamVerifiedRegex, steamVerifiedName)
+
 	fmt.Println("[HATCH MODULE] Started ReadPlayerStatusFromLogs Module")
 
 	for {
@@ -33,17 +41,11 @@ func ReadPlayerStatusFromLogs(broadcast *broadcast.Broadcaster) {
 			msg := event.(LogEvent)
 
 			if msg.Name == connectName {
-				onPlayerConnect(msg.Args)
+
 			}
 			if msg.Name == disconnectName {
-				onPlayerDisconnect(msg.Args)
+
 			}
 		}
 	}
-}
-
-func onPlayerConnect(args []string) {
-}
-
-func onPlayerDisconnect(args []string) {
 }

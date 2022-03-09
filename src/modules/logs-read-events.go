@@ -44,8 +44,8 @@ func FireEventsFromLogs(broadcast *broadcast.Broadcaster, out *broadcast.Broadca
 					Args: arr,
 				}
 
-				out.Send(event)
 				fmt.Println("[LOG EVENT]", event.Name, event.Args)
+				out.Send(event)
 			}
 		}
 	}

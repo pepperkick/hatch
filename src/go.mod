@@ -9,6 +9,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.15.0
 	github.com/hpcloud/tail v1.0.0
 	github.com/klauspost/compress v1.13.1 // indirect
+	github.com/riking/homeapi v0.0.0-20200223015937-ab7260bd16fc
 	github.com/tjgq/broadcast v0.0.0-20140913210940-9d7fb01523c6
 	github.com/valyala/fasthttp v1.28.0 // indirect
 	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
