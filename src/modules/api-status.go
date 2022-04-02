@@ -3,6 +3,7 @@ package modules
 import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/qixalite/hatch/modules/services"
 )
 
 type ServerStatus struct {
@@ -33,4 +34,12 @@ func SetupStatusAPI(app *fiber.App, password string, lighthouseId string) {
 	}))
 
 	fmt.Println("[HATCH MODULE] Started StatusAPI Module")
+}
+
+func (s *ServerStatus) GetRconServer() services.RconServer {
+	return services.RconServer{
+		IP:           s.IP,
+		Port:         s.Port,
+		RconPassword: s.RconPassword,
+	}
 }

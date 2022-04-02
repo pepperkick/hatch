@@ -3,9 +3,8 @@ package modules
 import (
 	"fmt"
 	"github.com/qixalite/hatch/modules/services"
-	"github.com/riking/homeapi/rcon"
 	"github.com/tjgq/broadcast"
-	"strconv"
+	"time"
 )
 
 func MonitorServer(broadcast *broadcast.Broadcaster) {
@@ -16,6 +15,20 @@ func MonitorServer(broadcast *broadcast.Broadcaster) {
 	AddLogMatcher(regex, name)
 
 	fmt.Println("[HATCH MODULE] Started MonitorServer Module")
+
+	ticker := time.NewTicker(time.Second * 30)
+	quit := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				onPlayerConnect([]string{})
+			case <-quit:
+				ticker.Stop()
+				return
+			}
+		}
+	}()
 
 	for {
 		select {
@@ -45,27 +58,19 @@ func onPlayerConnect(args []string) {
 	fmt.Println("[MONITOR_PLAYERS] onPlayerConnect")
 	ReadServerInfo()
 
+	// Check for banned players
 	for _, player := range activePlayers {
 		if !services.CheckPlayerBan(player.Steam) {
 			continue
 		}
 
-		port, _ := strconv.Atoi(serverStatus.Port)
-		conn, err := rcon.Dial(serverStatus.IP, port, serverStatus.RconPassword)
-		if err != nil {
-			fmt.Println("[MONITOR_PLAYERS] Failed to create rcon connection to ban the player", err)
-			continue
-		}
-
 		command := fmt.Sprintf("banid 0 %s kick", player.Steam)
-		if _, err := conn.Command(command); err != nil {
+		res, err := services.ExecRconCommand(serverStatus.GetRconServer(), command)
+		if err != nil {
 			fmt.Println("[MONITOR_PLAYERS] Failed to execute rcon command to ban the player", err)
 			continue
 		}
 
-		if err := conn.Close(); err != nil {
-			fmt.Println("[MONITOR_PLAYERS] Failed to close rcon connection", err)
-			continue
-		}
+		fmt.Println("[MONITOR_PLAYERS] Vangaurd ban response for", player.Steam, res)
 	}
 }

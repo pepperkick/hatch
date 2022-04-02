@@ -9,7 +9,7 @@ import (
 	"github.com/tjgq/broadcast"
 )
 
-var version = "2.0.5"
+var version = "2.1.0"
 
 func main() {
 	var lighthouseId, address, password, elasticHost, elasticChatIndex, elasticRconIndex, vanguardApi, vanguardSecret string
@@ -19,8 +19,8 @@ func main() {
 	flag.StringVar(&elasticHost, "elasticHost", "", "URL to elastic search instance.")
 	flag.StringVar(&elasticChatIndex, "elasticChatIndex", "plux-chat-development", "ElasticSearch index to store chat messages in")
 	flag.StringVar(&elasticRconIndex, "elasticRconIndex", "plux-rcon-development", "ElasticSearch index to store rcon logs in")
-	flag.StringVar(&vanguardApi, "vanguardApi", "http://api.qixalite.com/vanguard", "Vanguard API")
-	flag.StringVar(&vanguardSecret, "vanguardSecret", "DVFDCWQ71AZRP279WTT8EYP35D0FHRSF", "Vanguard client secret")
+	flag.StringVar(&vanguardApi, "vanguardApi", "", "Vanguard API")
+	flag.StringVar(&vanguardSecret, "vanguardSecret", "", "Vanguard client secret")
 	flag.Parse()
 
 	app := fiber.New(fiber.Config{
@@ -42,6 +42,8 @@ func main() {
 	// Setup APIs
 	modules.SetupFilesAPI(app, password)
 	modules.SetupStatusAPI(app, password, lighthouseId)
+	modules.SetupCommonAPI(app, password)
+	modules.SetupWhitelistAPI(app, password)
 
 	// Start tasks
 	go modules.ReadServerLogs(&logBroadcast)

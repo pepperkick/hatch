@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -23,6 +24,10 @@ func InitializeVanguard(api string, secret string) {
 }
 
 func CheckPlayerBan(id string) bool {
+	if VanguardApi == "" {
+		return false
+	}
+
 	action := "LIGHTHOUSE_SERVER_CONNECT"
 	url := fmt.Sprintf("%s/bans/steam/%s/%s", VanguardApi, id, action)
 	fmt.Println("[VANGUARD] URL", url)
@@ -41,9 +46,13 @@ func CheckPlayerBan(id string) bool {
 		return false
 	}
 
-	fmt.Println("[VANGUARD]", res)
+	fmt.Println("[VANGUARD] Response for ban check", id, res)
 
 	if res.StatusCode == 200 {
+		body, err := io.ReadAll(res.Body)
+		if err == nil {
+			fmt.Println("[VANGUARD] Body response for ban check", id, string(body))
+		}
 		return true
 	} else {
 		return false
